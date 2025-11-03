@@ -1,252 +1,54 @@
-# Voice Recording & Transcription App
+# Voice Recorder Android Application
 
-A robust Android application for recording voice with automatic transcription and AI-powered summary generation. Built with modern Android development practices using Kotlin, Jetpack Compose, and MVVM architecture.
+This is a voice recording application for Android, built as a take-home assignment. It allows users to record audio, view a list of their recordings, and see a generated transcript and summary for each recording.
 
-## 📋 Overview
+## Features Implemented
 
-This app provides a complete solution for voice recording with intelligent handling of real-world edge cases including phone calls, audio focus changes, storage limitations, and process death scenarios.
+The app successfully implements the majority of the core features and critical edge cases outlined in the project requirements.
 
-### Key Features
+### 1. Robust Audio Recording
 
-✅ **Robust Audio Recording**
-- Foreground service with persistent notification
-- 30-second chunks with 2-second overlap
-- Background recording support
-- Automatic chunk management
+*   **Background Recording:** A foreground service (`RecordingService`) ensures audio can be recorded reliably even when the app is in the background.
+*   **Chunk-Based Saving:** Recordings are automatically split into 30-second audio chunks and saved to local storage. This ensures that no data is lost for long recordings.
+*   **Persistent Notification:** A notification is displayed during recording, showing the current duration and providing a "Stop" action.
+*   **Phone Call Handling:** The app automatically pauses the recording when an incoming or outgoing phone call is detected and resumes when the call ends.
+*   **Audio Focus Management:** The recording will pause if another app requests audio focus (e.g., a music player) and provides an option to resume from the notification.
+*   **Low Storage Detection:** The app checks for sufficient storage space before starting a recording and before saving each new chunk, stopping gracefully if storage is low.
+*   **Silent Audio Warnings:** If no audio is detected from the microphone for 10 seconds, a warning notification is displayed to the user.
 
-✅ **Edge Case Handling**
-- Phone call interruption (pause/resume)
-- Audio focus loss detection
-- Microphone source changes (Bluetooth/wired headsets)
-- Low storage detection
-- Process death recovery
-- Silent audio detection
+### 2. Transcription
 
-✅ **Automatic Transcription**
-- Background processing with WorkManager
-- Chunk-by-chunk transcription
-- Automatic retry on failure
-- Room database for persistence
+*   **Background Transcription:** As soon as a 30-second audio chunk is saved, a background job is enqueued using `WorkManager` to handle transcription.
+*   **Mock Service Integration:** The app is configured to use a mock transcription service, as permitted by the project requirements. This simulates an API call and returns a sample transcript, allowing for full testing of the application flow.
+*   **Durable and Ordered:** Transcripts are saved to a local Room database and associated with the correct audio chunk, ensuring data integrity and correct order.
 
-✅ **AI-Powered Summaries**
-- Structured summary generation
-- Title, Summary, Action Items, Key Points
-- Streaming UI updates
-- Background generation (survives app kill)
+### 3. Summary Generation
 
-## 🎯 Technical Stack
+*   **Background Summary:** Once all chunks for a meeting are transcribed, a final background job is enqueued to generate a structured summary.
+*   **Structured Output:** The summary screen is designed to display four key sections: **Title**, **Summary**, **Action Items**, and **Key Points**.
+*   **State Handling:** The UI correctly handles and displays `Loading` and `Error` states for the summary generation process, including a "Retry" button.
+*   **App Kill Resistant:** The summary generation is handled by `WorkManager`, ensuring it will complete even if the app is closed during the process.
 
-- **Language**: Kotlin
-- **UI**: Jetpack Compose (100%)
-- **Architecture**: MVVM + Repository Pattern
-- **Dependency Injection**: Hilt
-- **Database**: Room
-- **Networking**: Retrofit + OkHttp
-- **Async**: Coroutines + Flow
-- **Background Work**: WorkManager + Foreground Service
-- **Minimum SDK**: API 24 (Android 7.0)
-- **Target SDK**: API 34 (Android 14)
+## Architecture and Tech Stack
 
-## 🚀 Quick Start
+The project is built using a modern, best-practice Android architecture.
 
-### Prerequisites
-- Android Studio (Arctic Fox or later)
-- JDK 17 or higher
-- Android SDK (API 24-34)
+*   **Tech Stack:** 100% [Kotlin](https://kotlinlang.org/) and [Jetpack Compose](https://developer.android.com/jetpack/compose).
+*   **Architecture:** Follows the **MVVM (Model-View-ViewModel)** pattern.
+    *   **View:** Jetpack Compose screens (`DashboardScreen`, `RecordingScreen`, `SummaryScreen`).
+    *   **ViewModel:** `AndroidViewModel` classes (`DashboardViewModel`, `RecordingViewModel`, `SummaryViewModel`) to manage UI state and business logic.
+    *   **Model:** A repository layer (`MeetingRepository`, `TranscriptionRepository`, etc.) that serves as a single source of truth, abstracting the data sources.
+*   **Dependency Injection:** [Hilt](https://dagger.dev/hilt/) is used to manage dependencies throughout the app, making the code modular and testable.
+*   **Asynchronous Operations:** [Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) and [Flow](https://kotlinlang.org/docs/flow.html) are used for all background tasks and to manage streams of data.
+*   **Database:** [Room](https://developer.android.com/training/data-storage/room) is used for local persistence of all meeting, audio chunk, and summary data.
+*   **Networking:** The app was built with [Retrofit](https://square.github.io/retrofit/) for API calls. It is currently configured to use a mock service via Hilt, but the real API interfaces and models are retained in the codebase to demonstrate readiness for a live integration.
 
-### Installation
+## Note on API Integration
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Sannidhi1112/twinmind.git
-   cd twinmind
-   ```
+This application is fully implemented to connect to a live OpenAI API for transcription and summary generation. The networking layer, repositories, and data models are all in place.
 
-2. **Open in Android Studio**
-   - File → Open → Select `twinmind` folder
-   - Wait for Gradle sync to complete
+However, due to a persistent `insufficient_quota` error with the provided test API key, the app is currently configured to use the **mock services** for demonstration purposes, as explicitly allowed by the project requirements. This ensures that the entire application flow can be tested and reviewed.
 
-3. **Run the app**
-   - Select device/emulator
-   - Click Run button (▶️)
-
-For detailed setup instructions, see [SETUP_INSTRUCTIONS.md](SETUP_INSTRUCTIONS.md)
-
-## 📱 App Flow
-
-1. **Dashboard** → View all recordings
-2. **Start Recording** → Tap + button → Grant permissions
-3. **Record** → Speak into microphone → See live timer
-4. **Stop** → Recording saved automatically
-5. **Transcription** → Automatic background processing
-6. **Summary** → AI-generated summary with action items
-
-## 🏗️ Architecture
-
-### MVVM + Clean Architecture
-
-```
-UI Layer (Compose) → ViewModel → Repository → Data Sources (Room + Retrofit)
-```
-
-### Key Components
-
-- **Data Layer**: Room database, Retrofit APIs, Repositories
-- **Domain Layer**: Business logic, Use cases
-- **UI Layer**: Jetpack Compose screens, ViewModels
-- **Services**: RecordingService (foreground), WorkManager workers
-
-## 📂 Project Structure
-
-```
-app/src/main/java/com/twinmind/voicerecorder/
-├── data/
-│   ├── local/          # Room database, DAOs, entities
-│   ├── remote/         # API services
-│   └── repository/     # Repository implementations
-├── di/                 # Hilt dependency injection
-├── service/            # RecordingService, Workers
-├── ui/
-│   ├── screen/        # Compose screens
-│   ├── viewmodel/     # ViewModels
-│   ├── navigation/    # Navigation setup
-│   └── theme/         # Material 3 theme
-└── utils/             # Utility classes
-```
-
-## 🔧 Configuration
-
-### Mock API (Default)
-The app uses mock services by default - no API keys required.
-
-### Real API Integration
-
-#### OpenAI
-1. Get API key from: https://platform.openai.com/api-keys
-2. Add to `local.properties`:
-   ```
-   OPENAI_API_KEY=sk-...
-   ```
-3. Update `TranscriptionRepository.kt` and `SummaryRepository.kt`
-
-#### Google Gemini
-1. Get API key from: https://makersuite.google.com/app/apikey
-2. Add to `local.properties`:
-   ```
-   GEMINI_API_KEY=...
-   ```
-3. Update repository implementations
-
-## 🎨 UI Screens
-
-### Dashboard
-- Meeting list with status
-- Transcription progress
-- FAB for new recording
-
-### Recording
-- Live timer display
-- Status indicators
-- Record/Stop controls
-
-### Summary
-- Title section
-- Summary text
-- Action items (checkboxes)
-- Key points (bullets)
-
-## 🧪 Testing
-
-### Test Scenarios
-- ✅ Basic recording flow
-- ✅ Phone call interruption
-- ✅ Audio focus loss
-- ✅ Storage limits
-- ✅ Process death recovery
-- ✅ Transcription with retry
-- ✅ Summary generation
-
-## 🔐 Permissions
-
-- `RECORD_AUDIO` - Required for recording
-- `FOREGROUND_SERVICE` - Background recording
-- `POST_NOTIFICATIONS` - Android 13+ notifications
-- `READ_PHONE_STATE` - Phone call detection (optional)
-
-## 📊 Technical Highlights
-
-### Edge Case Handling
-- **Phone Calls**: Automatic pause/resume
-- **Audio Focus**: Smart handling of interruptions
-- **Storage**: Pre-flight checks before recording
-- **Process Death**: State persistence with Room
-- **Silent Audio**: 10-second detection with warning
-
-### Data Flow
-1. Record → Save chunk to Room
-2. Trigger WorkManager for transcription
-3. API call → Save transcript to Room
-4. All chunks complete → Generate summary
-5. Stream summary updates to UI via Flow
-
-## 🚀 Performance
-
-- Chunked recording (30s) for memory efficiency
-- WorkManager for reliable background processing
-- Flow-based reactive updates
-- Room as single source of truth
-- Compose for efficient UI rendering
-
-## 📝 Implementation Details
-
-### Recording Service
-- Foreground service with notification
-- MediaRecorder lifecycle management
-- Phone state & audio focus listeners
-- Storage monitoring
-- Chunk overlap for continuity
-
-### Transcription
-- WorkManager integration
-- Retry mechanism (max 3 attempts)
-- Preserves chunk order
-- Progress tracking in database
-
-### Summary
-- LLM integration (OpenAI/Gemini)
-- Streaming response parsing
-- Structured output (Title, Summary, Actions, Points)
-- Background generation with WorkManager
-
-## 🐛 Known Issues
-
-1. Mock API doesn't provide real transcription
-2. Limited emulator audio support
-3. Network required for transcription/summary
-
-## 🔮 Future Enhancements
-
-- Export transcript/summary to PDF
-- Cloud backup
-- Multi-language support
-- Speaker identification
-- Real-time transcription
-- Search functionality
-
-## 📄 License
-
-This project is created as a take-home assignment demonstration.
-
-## 👨‍💻 Development
-
-Built with modern Android development best practices:
-- Kotlin Coroutines & Flow
-- Jetpack Compose
-- Hilt Dependency Injection
-- Room Database
-- MVVM Architecture
-- Material 3 Design
-
----
-
-For detailed setup instructions and troubleshooting, see [SETUP_INSTRUCTIONS.md](SETUP_INSTRUCTIONS.md)
+To switch to the live API, one would only need to:
+1.  Provide a valid API key in the `local.properties` file.
+2.  Update the Hilt `NetworkModule` to provide the real `TranscriptionApi` and `SummaryApi` instead of the `MockApiService`.
