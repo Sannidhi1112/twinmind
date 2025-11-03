@@ -1,5 +1,6 @@
 package com.twinmind.voicerecorder.utils
 
+import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
 
@@ -37,10 +38,10 @@ object AudioUtils {
         }
     }
 
-    fun isAudioSourceAvailable(audioSource: Int): Boolean {
+    fun isAudioSourceAvailable(context: Context, audioSource: Int): Boolean {
         return try {
             val recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                MediaRecorder(android.content.Context::class.java)
+                MediaRecorder(context)
             } else {
                 @Suppress("DEPRECATION")
                 MediaRecorder()
