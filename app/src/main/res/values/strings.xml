@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Voice Recorder</string>
+
+    <!-- Recording -->
+    <string name="start_recording">Start Recording</string>
+    <string name="stop_recording">Stop Recording</string>
+    <string name="pause_recording">Pause Recording</string>
+    <string name="resume_recording">Resume Recording</string>
+
+    <!-- Status -->
+    <string name="status_recording">Recording...</string>
+    <string name="status_paused">Paused</string>
+    <string name="status_stopped">Stopped</string>
+    <string name="status_paused_phone_call">Paused - Phone call</string>
+    <string name="status_paused_audio_focus">Paused - Audio focus lost</string>
+    <string name="status_paused_no_audio">Paused - No audio detected</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Recording Service</string>
+    <string name="notification_channel_description">Shows recording status and controls</string>
+    <string name="notification_recording">Recording in progress</string>
+
+    <!-- Errors -->
+    <string name="error_low_storage">Recording stopped - Low storage</string>
+    <string name="error_no_audio">No audio detected - Check microphone</string>
+    <string name="error_permission_denied">Microphone permission required</string>
+
+    <!-- Summary -->
+    <string name="summary_title">Title</string>
+    <string name="summary_summary">Summary</string>
+    <string name="summary_action_items">Action Items</string>
+    <string name="summary_key_points">Key Points</string>
+    <string name="summary_generating">Generating summary...</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_empty">No recordings yet</string>
+    <string name="dashboard_empty_subtitle">Tap the + button to start recording</string>
+</resources>
