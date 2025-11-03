@@ -1,0 +1,13 @@
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the android SDK. This is set automatically on Android Studio install.
+# On macOS, this is typically /Users/<username>/Library/Android/sdk
+# On Windows, this is typically C:\Users\<username>\AppData\Local\Android\sdk
+# On Linux, this is typically /home/<username>/Android/Sdk
+sdk.dir=/path/to/your/Android/sdk
+
+# Optional: API Keys for real transcription and summary services
+# If not set, the app will use mock services
+# OPENAI_API_KEY=sk-your-openai-key-here
+# GEMINI_API_KEY=your-gemini-key-here
